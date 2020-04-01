@@ -1,0 +1,105 @@
+create database colegio;
+use colegio;
+drop database colegio;
+show tables;
+create table empresa(
+Cod_Empresa varchar(250),
+Nombre varchar(250) not null,
+constraint PK_empresa primary key (Cod_Empresa)
+);
+create table profesor(
+DNI varchar(250) not null,
+Nombre varchar(250) not null,
+Tlfno varchar(250) not null,
+Direccion varchar(250) not null,
+constraint PK_profesor primary key (DNI)
+);
+create table rel_emp_prof(
+DNI varchar(250) not null,
+Cod_Empresa varchar(250) not null,
+constraint rel_prof foreign key (DNI) references profesor (DNI),
+constraint rel_emp foreign key (Cod_Empresa) references empresa (Cod_Empresa)
+);
+create table modulo(
+Cod_Modulo varchar(250) not null,
+Nombre varchar(250) not null,
+DNI varchar(250) not null,
+constraint PK_modulo primary key (Cod_Modulo),
+constraint FK_profesor foreign key (DNI) references profesor (DNI)
+);
+create table tema(
+Cod_Tema varchar(250) not null,
+Titulo varchar(250) not null,
+Cod_Modulo varchar(250) not null,
+constraint PK_tema primary key (Cod_Tema),
+constraint FK_modulo foreign key (Cod_Modulo) references modulo (Cod_Modulo)
+);
+create table curso(
+Cod_Curso varchar(250) not null,
+Num_Curso varchar(250) not null,
+Nivel_Educativo varchar(250) not null,
+constraint PK_curso primary key (Cod_Curso)
+);
+create table aula(
+Cod_Aula varchar(250) not null,
+Num_Plazas varchar(250) not null,
+Num_ordenadores varchar(250) not null,
+constraint PK_aula primary key (Cod_Aula)
+);
+create table grupo(
+Letra varchar(250) not null,
+Cod_Aula varchar(250) not null,
+Cod_Curso varchar(250) not null,
+constraint PK_grupo primary key (Letra),
+constraint FK_curso foreign key (Cod_Curso) references curso (Cod_Curso),
+constraint FK_aula foreign key (Cod_Aula) references aula (Cod_Aula)
+);
+create table alumno(
+Num_Expediente varchar(250) not null,
+Letra varchar(250) not null,
+Nombre varchar(250) not null,
+Tlfno varchar(250) not null,
+Fecha_Nac date not null,
+Num_Exp_Delegado varchar(250) not null,
+constraint PK_alumno primary key (Num_Expediente),
+constraint FK_grupo foreign key (Letra) references grupo (Letra),
+constraint FK_delegado foreign key (Num_Exp_Delegado) references alumno (Num_Expediente)
+);
+create table beca(
+Id varchar(250) not null,
+Num_Expediente varchar(250) not null,
+Cuantia varchar(250) not null,
+Fecha date not null,
+constraint PK_beca primary key (Id),
+constraint FK_alumno foreign key (Num_Expediente) references alumno (Num_Expediente)
+);
+create table rel_alum_mod(
+Num_Expediente varchar(250) not null,
+Cod_Modulo varchar(250) not null,
+constraint rel_alumno foreign key (Num_Expediente) references alumno (Num_Expediente),
+constraint rel_modulo foreign key (Cod_Modulo) references modulo (Cod_Modulo)
+);
+
+alter table empresa rename organizacion;
+alter table organizacion add direccion varchar(250) not null;
+select * from profesor;
+alter table tema modify Cod_Tema varchar(50) not null;
+alter table profesor drop Nombre;
+show tables;
+
+select * from alumno;
+insert into organizacion (Cod_Empresa,Nombre,direccion) values (4,"Rebook","Av 4");
+insert into profesor (DNI,Tlfno,direccion) values (14,65165465,"Av 14");
+insert into rel_emp_prof (DNI,Cod_Empresa) values (14,4);
+insert into modulo (Cod_Modulo,Nombre,DNI) values (24,"Ingles",14);
+insert into tema (Cod_Tema,Titulo,Cod_Modulo) values (34,"Medicion",24);
+insert into curso (Cod_Curso,Num_Curso,Nivel_Educativo) values (44,"4","Primaria");
+insert into aula (Cod_Aula,Num_Plazas,Num_Ordenadores) values (54,30,30);
+insert into grupo (Letra,Cod_Aula,Cod_Curso) values ("D",54,43);
+insert into alumno (Num_Expediente, Letra,Nombre,Tlfno,Fecha_Nac,Num_Exp_Delegado) values (64,"A","Edgar",329874864,"2020/03/31",62);
+insert into beca (Id,Num_Expediente, Cuantia,Fecha) values (74,64,100000,"2020/03/31");
+insert into rel_alum_mod (Num_Expediente, Cod_Modulo) values (64,24);
+
+
+select alumno.Nombre, alumno.Letra, grupo.Cod_Aula 
+from alumno inner join grupo on grupo.Letra = alumno.Letra where nombre="Adriana";
